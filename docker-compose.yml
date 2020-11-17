@@ -1,0 +1,13 @@
+version: "3.6"
+services:
+  postgres:
+    image: postgres:13.2
+    restart: always
+    hostname: postgres
+    container_name: postgres
+    environment:
+      POSTGRES_DB: urldb
+      POSTGRES_PASSWORD: secret
+      POSTGRES_USER: urldb
+    ports:
+      - 5432:5432

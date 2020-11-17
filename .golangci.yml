@@ -1,0 +1,9 @@
+linters:
+  enable-all: true
+
+issues:
+  exclude-rules:
+    - path: \.go
+      linters:
+        - stylecheck
+  exclude-use-default: false
