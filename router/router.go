@@ -6,7 +6,7 @@ import (
 	"github.com/saraghaedi/urlshortener/handler"
 )
 
-// New handles all the routes
+// New handles all the routes.
 func New(db *gorm.DB) *mux.Router {
 	r := mux.NewRouter().StrictSlash(true)
 

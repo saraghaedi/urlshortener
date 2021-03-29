@@ -10,19 +10,19 @@ import (
 	"github.com/saraghaedi/urlshortener/model"
 )
 
-// URLHandler will hold everything that controller needs
+// URLHandler will hold everything that controller needs.
 type URLHandler struct {
 	db *gorm.DB
 }
 
-// NewURLHandler returns a new BaseHandler
+// NewURLHandler returns a new BaseHandler.
 func NewURLHandler(db *gorm.DB) *URLHandler {
 	return &URLHandler{
 		db: db,
 	}
 }
 
-// AllURLs returns all Urls in database
+// AllURLs returns all Urls in database.
 func (u URLHandler) AllURLs(w http.ResponseWriter, r *http.Request) {
 	var urls []model.URL
 
@@ -35,7 +35,7 @@ func (u URLHandler) AllURLs(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// NewURL will add a new url in database
+// NewURL will add a new url in database.
 func (u URLHandler) NewURL(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	bigurl := vars["url"]
@@ -49,7 +49,7 @@ func (u URLHandler) NewURL(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//DeleteURL delete a specific url with id from the database
+//DeleteURL delete a specific url with id from the database.
 func (u URLHandler) DeleteURL(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	idparam := vars["id"]
@@ -63,7 +63,7 @@ func (u URLHandler) DeleteURL(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// UpdateURL update a url by id from the database
+// UpdateURL update a url by id from the database.
 func (u URLHandler) UpdateURL(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	idparam := vars["id"]
