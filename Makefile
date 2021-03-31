@@ -8,6 +8,9 @@ export LDFLAGS="-w -s"
 
 all: format lint build
 
+run:
+	go run -ldflags $(LDFLAGS)  .
+
 build:
 	go build -ldflags $(LDFLAGS)  .
 

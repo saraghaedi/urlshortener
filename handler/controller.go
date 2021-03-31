@@ -3,10 +3,12 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/saraghaedi/urlshortener/response"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
+	"github.com/saraghaedi/urlshortener/functions"
 	"github.com/saraghaedi/urlshortener/model"
 )
 
@@ -40,13 +42,21 @@ func (u URLHandler) NewURL(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	bigurl := vars["url"]
 
-	u.db.Create(&model.URL{URL: bigurl})
+	url := &model.URL{URL: bigurl}
 
-	_, err := fmt.Fprintf(w, "New URL added to the database")
+	u.db.Create(url)
 
-	if err != nil {
-		fmt.Println(err.Error())
-	}
+	id := url.ID
+
+	shortURL := functions.URLEncoder(int64(id))
+
+	resp := response.NewURL{ShortURL: shortURL}
+
+	respBody, _ := json.Marshal(&resp)
+
+	w.Header().Add("content-type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(respBody)
 }
 
 //DeleteURL delete a specific url with id from the database.
