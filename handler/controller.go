@@ -1,43 +1,66 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/labstack/echo/v4"
 	"github.com/saraghaedi/urlshortener/request"
 	"github.com/saraghaedi/urlshortener/response"
-	"net/http"
 
 	"github.com/jinzhu/gorm"
-	"github.com/saraghaedi/urlshortener/functions"
 	"github.com/saraghaedi/urlshortener/model"
+	"github.com/saraghaedi/urlshortener/utils"
 )
 
-// URLHandler will hold everything that controller needs.
+// URLHandler handles all incoming requests related to URLs.
 type URLHandler struct {
 	db *gorm.DB
 }
 
-// NewURLHandler returns a new BaseHandler.
+// NewURLHandler returns a new URLHandler.
 func NewURLHandler(db *gorm.DB) *URLHandler {
 	return &URLHandler{
 		db: db,
 	}
 }
 
-// NewURL will add a new url in database.
+// NewURL creates a new short URL.
 func (u URLHandler) NewURL(c echo.Context) error {
 	var req request.NewURL
 
-	_ = c.Bind(&req)
+	if err := c.Bind(&req); err != nil {
+		c.Logger().Errorf("failed to decode request: %s", err.Error())
+		return echo.ErrBadRequest
+	}
 
 	url := &model.URL{URL: req.URL}
 
-	u.db.Create(url)
+	if err := u.db.Create(url).Error; err != nil {
+		c.Logger().Errorf("failed to create new url: %s", err.Error())
+		return echo.ErrInternalServerError
+	}
 
 	id := url.ID
 
-	shortURL := functions.URLEncoder(int64(id))
+	shortURL := utils.Base36Encoder(int64(id))
 
 	resp := response.NewURL{ShortURL: shortURL}
 
 	return c.JSON(http.StatusOK, resp)
+}
+
+// CallURL redirects to the main URL.
+func (u URLHandler) CallURL(c echo.Context) error {
+	shortURL := c.Param("shortUrl")
+
+	id := utils.Base36Decoder(shortURL)
+
+	var url model.URL
+
+	if err := u.db.Where("id = ?", id).Take(&url).Error; err != nil {
+		c.Logger().Errorf("failed to read url from db: %s", err.Error())
+		return echo.ErrInternalServerError
+	}
+
+	return c.Redirect(http.StatusMovedPermanently, url.URL)
 }

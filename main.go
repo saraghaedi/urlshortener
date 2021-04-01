@@ -1,9 +1,10 @@
 package main
 
 import (
+	"log"
+
 	"github.com/saraghaedi/urlshortener/database"
 	"github.com/saraghaedi/urlshortener/router"
-	"log"
 )
 
 func main() {

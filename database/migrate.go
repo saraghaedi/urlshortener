@@ -5,7 +5,7 @@ import (
 	"github.com/saraghaedi/urlshortener/model"
 )
 
-// Migrate function will do the database migration.
+// Migrate runs the database migrations.
 func Migrate(db *gorm.DB) error {
 	return db.AutoMigrate(&model.URL{}).Error
 }

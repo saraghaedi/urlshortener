@@ -5,7 +5,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres" // PostgreSQL driver should have blank import
 )
 
-// New opens a connection to the database.
+// New opens a new connection to the database.
 func New() (*gorm.DB, error) {
 	conStr := connectionString()
 
