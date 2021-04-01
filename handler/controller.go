@@ -1,12 +1,11 @@
 package handler
 
 import (
-	"encoding/json"
-	"fmt"
+	"github.com/labstack/echo/v4"
+	"github.com/saraghaedi/urlshortener/request"
 	"github.com/saraghaedi/urlshortener/response"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	"github.com/saraghaedi/urlshortener/functions"
 	"github.com/saraghaedi/urlshortener/model"
@@ -24,25 +23,13 @@ func NewURLHandler(db *gorm.DB) *URLHandler {
 	}
 }
 
-// AllURLs returns all Urls in database.
-func (u URLHandler) AllURLs(w http.ResponseWriter, r *http.Request) {
-	var urls []model.URL
-
-	u.db.Find(&urls)
-
-	err := json.NewEncoder(w).Encode(urls)
-
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-}
-
 // NewURL will add a new url in database.
-func (u URLHandler) NewURL(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	bigurl := vars["url"]
+func (u URLHandler) NewURL(c echo.Context) error {
+	var req request.NewURL
 
-	url := &model.URL{URL: bigurl}
+	_ = c.Bind(&req)
+
+	url := &model.URL{URL: req.URL}
 
 	u.db.Create(url)
 
@@ -52,38 +39,5 @@ func (u URLHandler) NewURL(w http.ResponseWriter, r *http.Request) {
 
 	resp := response.NewURL{ShortURL: shortURL}
 
-	respBody, _ := json.Marshal(&resp)
-
-	w.Header().Add("content-type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write(respBody)
-}
-
-//DeleteURL delete a specific url with id from the database.
-func (u URLHandler) DeleteURL(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	idparam := vars["id"]
-
-	u.db.Where("id = ?", idparam).Delete(model.URL{})
-
-	_, err := fmt.Fprintf(w, "Successfully Deleted URL")
-
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-}
-
-// UpdateURL update a url by id from the database.
-func (u URLHandler) UpdateURL(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	idparam := vars["id"]
-	newURL := vars["url"]
-
-	u.db.Where("id = ?", idparam).Update("url", &newURL)
-
-	_, err := fmt.Fprintf(w, "Successfully Updated URL")
-
-	if err != nil {
-		fmt.Println(err.Error())
-	}
+	return c.JSON(http.StatusOK, resp)
 }

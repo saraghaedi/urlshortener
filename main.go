@@ -1,11 +1,9 @@
 package main
 
 import (
-	"log"
-	"net/http"
-
 	"github.com/saraghaedi/urlshortener/database"
 	"github.com/saraghaedi/urlshortener/router"
+	"log"
 )
 
 func main() {
@@ -20,5 +18,5 @@ func main() {
 
 	r := router.New(db)
 
-	log.Fatal(http.ListenAndServe(":8081", r))
+	log.Fatal(r.Start(":8080"))
 }
