@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/sirupsen/logrus"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -29,14 +30,14 @@ func (u URLHandler) NewURL(c echo.Context) error {
 	var req request.NewURL
 
 	if err := c.Bind(&req); err != nil {
-		c.Logger().Errorf("failed to decode request: %s", err.Error())
+		logrus.Errorf("failed to decode request: %s", err.Error())
 		return echo.ErrBadRequest
 	}
 
 	url := &model.URL{URL: req.URL}
 
 	if err := u.db.Create(url).Error; err != nil {
-		c.Logger().Errorf("failed to create new url: %s", err.Error())
+		logrus.Errorf("failed to create new url: %s", err.Error())
 		return echo.ErrInternalServerError
 	}
 
@@ -58,7 +59,7 @@ func (u URLHandler) CallURL(c echo.Context) error {
 	var url model.URL
 
 	if err := u.db.Where("id = ?", id).Take(&url).Error; err != nil {
-		c.Logger().Errorf("failed to read url from db: %s", err.Error())
+		logrus.Errorf("failed to read url from db: %s", err.Error())
 		return echo.ErrInternalServerError
 	}
 
