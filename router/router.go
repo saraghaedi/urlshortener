@@ -4,14 +4,14 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/saraghaedi/urlshortener/config"
 	"github.com/saraghaedi/urlshortener/handler"
-	"github.com/saraghaedi/urlshortener/log"
+	"github.com/saraghaedi/urlshortener/pkg/log"
 	"github.com/sirupsen/logrus"
-	"time"
 )
 
 // New creates all the routes.
-func New(db *gorm.DB) *echo.Echo {
+func New(cfg config.Config, db *gorm.DB) *echo.Echo {
 	e := echo.New()
 
 	debug := logrus.IsLevelEnabled(logrus.DebugLevel)
@@ -24,18 +24,15 @@ func New(db *gorm.DB) *echo.Echo {
 
 	e.Debug = debug
 
-	e.Server.ReadTimeout = 20 * time.Second
-	e.Server.WriteTimeout = 20 * time.Second
+	e.Server.ReadTimeout = cfg.Server.ReadTimeout
+	e.Server.WriteTimeout = cfg.Server.WriteTimeout
 
 	recoverConfig := middleware.DefaultRecoverConfig
 	recoverConfig.DisablePrintStack = !debug
 	e.Use(middleware.RecoverWithConfig(recoverConfig))
 
 	e.Use(middleware.CORS())
-	e.Use(log.LoggerMiddleware(log.AccessLogger{
-		Enabled: true,
-		Path:    "./access.log",
-	}))
+	e.Use(log.LoggerMiddleware(cfg.Logger.AccessLogger))
 
 	urlHandler := handler.NewURLHandler(db)
 

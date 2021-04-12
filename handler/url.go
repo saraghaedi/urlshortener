@@ -1,8 +1,9 @@
 package handler
 
 import (
-	"github.com/sirupsen/logrus"
 	"net/http"
+
+	"github.com/sirupsen/logrus"
 
 	"github.com/labstack/echo/v4"
 	"github.com/saraghaedi/urlshortener/request"

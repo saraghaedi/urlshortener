@@ -6,10 +6,9 @@ import (
 )
 
 // New opens a new connection to the database.
-func New() (*gorm.DB, error) {
-	conStr := connectionString()
-
-	db, err := gorm.Open(dbType, conStr)
+func New(driver string, conStr string) (*gorm.DB, error) {
+	//conStr := connectionString()
+	db, err := gorm.Open(driver, conStr)
 	if err != nil {
 		return nil, err
 	}

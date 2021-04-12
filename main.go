@@ -1,7 +1,8 @@
 package main
 
 import (
-	"github.com/saraghaedi/urlshortener/log"
+	"github.com/saraghaedi/urlshortener/config"
+	"github.com/saraghaedi/urlshortener/pkg/log"
 	"github.com/sirupsen/logrus"
 
 	"github.com/saraghaedi/urlshortener/database"
@@ -9,12 +10,11 @@ import (
 )
 
 func main() {
-	log.SetupLogger(log.AppLogger{
-		Level:  logrus.InfoLevel.String(),
-		StdOut: true,
-	})
+	cfg := config.Init()
 
-	db, err := database.New()
+	log.SetupLogger(cfg.Logger.AppLogger)
+
+	db, err := database.New(cfg.Database.Driver, cfg.Database.MasterConnStr)
 	if err != nil {
 		logrus.Fatalf("faled to connect to database: %s", err.Error())
 	}
@@ -23,7 +23,7 @@ func main() {
 		logrus.Fatalf("faled to run database migrations: %s", err.Error())
 	}
 
-	r := router.New(db)
+	r := router.New(cfg, db)
 
-	logrus.Fatal(r.Start(":8080"))
+	logrus.Fatal(r.Start(cfg.Server.Address))
 }
