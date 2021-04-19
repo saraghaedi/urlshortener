@@ -4,8 +4,8 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/saraghaedi/urlshortener/config"
-	"github.com/saraghaedi/urlshortener/handler"
+	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/config"
+	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/handler"
 	"github.com/saraghaedi/urlshortener/pkg/log"
 	"github.com/sirupsen/logrus"
 )

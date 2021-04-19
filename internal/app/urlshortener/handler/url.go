@@ -6,12 +6,12 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/labstack/echo/v4"
-	"github.com/saraghaedi/urlshortener/request"
-	"github.com/saraghaedi/urlshortener/response"
+	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/request"
+	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/response"
 
 	"github.com/jinzhu/gorm"
-	"github.com/saraghaedi/urlshortener/model"
-	"github.com/saraghaedi/urlshortener/utils"
+	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/model"
+	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/utils"
 )
 
 // URLHandler handles all incoming requests related to URLs.

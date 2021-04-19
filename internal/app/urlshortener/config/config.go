@@ -48,7 +48,6 @@ func Init() Config {
 	var cfg Config
 
 	config.Init(app, cfgFile, &cfg, defaultConfig, cfgPrefix)
-	//
 	//if err := cfg.Validate(); err != nil {
 	//	logrus.Fatalf("failed to validate configurations: %s", err.Error())
 	//}

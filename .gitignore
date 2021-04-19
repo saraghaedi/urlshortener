@@ -184,7 +184,6 @@ Temporary Items
 
 .idea
 data
-urlshortener
+./urlshortener
 config.yaml
 coverage.txt
-input.txt

@@ -9,13 +9,19 @@ export LDFLAGS="-w -s"
 all: format lint build
 
 run:
-	go run -ldflags $(LDFLAGS)  .
+	go run -ldflags $(LDFLAGS)  ./cmd/urlshortener
 
 build:
-	go build -ldflags $(LDFLAGS)  .
+	go build -ldflags $(LDFLAGS)  ./cmd/urlshortener
 
 install:
-	go install -ldflags $(LDFLAGS)
+	go install -ldflags $(LDFLAGS) ./cmd/urlshortener
+
+check-go-bindata:
+	which go-bindata || GO111MODULE=off go get -u github.com/jteeuwen/go-bindata/...
+
+bindata: check-go-bindata
+	cd internal/app/urlshortener/migrations/postgres && go-bindata -pkg postgres -o ./../bindata/postgres/bindata.go .
 
 check-formatter:
 	which goimports || GO111MODULE=off go get -u golang.org/x/tools/cmd/goimports
@@ -26,8 +32,9 @@ format: check-formatter
 
 check-linter:
 	which golangci-lint || GO111MODULE=off go get -u github.com/golangci/golangci-lint/cmd/golangci-lint@v1.23.8
+
 lint: check-linter
-	golangci-lint run $(ROOT)/...
+	golangci-lint -c build/ci/.golangci.yml run $(ROOT)/...
 
 up:
 	docker-compose -f docker-compose.yml up -d
