@@ -22,7 +22,7 @@ func main() {
 		logrus.Fatalf("faled to connect to database: %s", err.Error())
 	}
 
-	if err := database.Migrate(source,cfg.Database.MasterConnStr); err != nil {
+	if err := database.Migrate(source, cfg.Database.MasterConnStr); err != nil {
 		logrus.Fatalf("faled to run database migrations: %s", err.Error())
 	}
 
@@ -30,6 +30,3 @@ func main() {
 
 	logrus.Fatal(r.Start(cfg.Server.Address))
 }
-
-
-
