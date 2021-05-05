@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/config"
 	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/handler"
+	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/model"
 	"github.com/saraghaedi/urlshortener/pkg/log"
 	"github.com/sirupsen/logrus"
 )
@@ -34,7 +35,12 @@ func New(cfg config.Config, db *gorm.DB) *echo.Echo {
 	e.Use(middleware.CORS())
 	e.Use(log.LoggerMiddleware(cfg.Logger.AccessLogger))
 
-	urlHandler := handler.NewURLHandler(db)
+	urlRepo := model.SQLURLRepo{
+		MasterDB: db,
+		SlaveDB:  db,
+	}
+
+	urlHandler := handler.NewURLHandler(urlRepo)
 
 	e.POST("/url", urlHandler.NewURL)
 	e.GET("/:shortUrl", urlHandler.CallURL)

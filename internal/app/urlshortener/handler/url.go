@@ -9,20 +9,19 @@ import (
 	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/request"
 	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/response"
 
-	"github.com/jinzhu/gorm"
 	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/model"
 	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/utils"
 )
 
 // URLHandler handles all incoming requests related to URLs.
 type URLHandler struct {
-	db *gorm.DB
+	URLRepo model.URLRepo
 }
 
 // NewURLHandler returns a new URLHandler.
-func NewURLHandler(db *gorm.DB) *URLHandler {
+func NewURLHandler(urlRepo model.URLRepo) *URLHandler {
 	return &URLHandler{
-		db: db,
+		URLRepo: urlRepo,
 	}
 }
 
@@ -37,7 +36,7 @@ func (u URLHandler) NewURL(c echo.Context) error {
 
 	url := &model.URL{URL: req.URL}
 
-	if err := u.db.Create(url).Error; err != nil {
+	if err := u.URLRepo.Create(url); err != nil {
 		logrus.Errorf("failed to create new url: %s", err.Error())
 		return echo.ErrInternalServerError
 	}
@@ -57,9 +56,8 @@ func (u URLHandler) CallURL(c echo.Context) error {
 
 	id := utils.Base36Decoder(shortURL)
 
-	var url model.URL
-
-	if err := u.db.Where("id = ?", id).Take(&url).Error; err != nil {
+	url, err := u.URLRepo.FindByID(id)
+	if err != nil {
 		logrus.Errorf("failed to read url from db: %s", err.Error())
 		return echo.ErrInternalServerError
 	}
