@@ -15,7 +15,6 @@ type URLRepo interface {
 }
 
 type SQLURLRepo struct {
-	Driver   string
 	MasterDB *gorm.DB
 	SlaveDB  *gorm.DB
 }
