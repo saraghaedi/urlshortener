@@ -12,7 +12,7 @@ import (
 )
 
 // New creates all the routes.
-func New(cfg config.Config, db *gorm.DB) *echo.Echo {
+func New(cfg config.Config, masterDb *gorm.DB, slaveDb *gorm.DB) *echo.Echo {
 	e := echo.New()
 
 	debug := logrus.IsLevelEnabled(logrus.DebugLevel)
@@ -36,8 +36,8 @@ func New(cfg config.Config, db *gorm.DB) *echo.Echo {
 	e.Use(log.LoggerMiddleware(cfg.Logger.AccessLogger))
 
 	urlRepo := model.SQLURLRepo{
-		MasterDB: db,
-		SlaveDB:  db,
+		MasterDB: masterDb,
+		SlaveDB:  slaveDb,
 	}
 
 	urlHandler := handler.NewURLHandler(urlRepo)

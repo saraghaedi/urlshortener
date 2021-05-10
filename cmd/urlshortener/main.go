@@ -17,16 +17,21 @@ func main() {
 
 	log.SetupLogger(cfg.Logger.AppLogger)
 
-	db, err := database.New(cfg.Database.Driver, cfg.Database.MasterConnStr)
+	masterDb, err := database.New(cfg.Database.Driver, cfg.Database.MasterConnStr)
 	if err != nil {
-		logrus.Fatalf("faled to connect to database: %s", err.Error())
+		logrus.Fatalf("faled to connect to master database: %s", err.Error())
+	}
+
+	slaveDb, err := database.New(cfg.Database.Driver, cfg.Database.SlaveConnStr)
+	if err != nil {
+		logrus.Fatalf("faled to connect to slave database: %s", err.Error())
 	}
 
 	if err := database.Migrate(source, cfg.Database.MasterConnStr); err != nil {
 		logrus.Fatalf("faled to run database migrations: %s", err.Error())
 	}
 
-	r := router.New(cfg, db)
+	r := router.New(cfg, masterDb, slaveDb)
 
 	logrus.Fatal(r.Start(cfg.Server.Address))
 }
