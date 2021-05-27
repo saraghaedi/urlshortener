@@ -3,6 +3,8 @@ package config
 import (
 	"time"
 
+	"github.com/saraghaedi/urlshortener/pkg/prometheus"
+
 	"github.com/saraghaedi/urlshortener/pkg/config"
 	"github.com/saraghaedi/urlshortener/pkg/log"
 )
@@ -16,9 +18,10 @@ const (
 type (
 	// Config represents application configuration struct.
 	Config struct {
-		Logger   Logger   `mapstructure:"logger"`
-		Server   Server   `mapstructure:"server"`
-		Database Database `mapstructure:"database"`
+		Logger     Logger     `mapstructure:"logger"`
+		Server     Server     `mapstructure:"server"`
+		Database   Database   `mapstructure:"database"`
+		Monitoring Monitoring `mapstructure:"monitoring"`
 	}
 
 	// Logger represents logger configuration struct.
@@ -40,6 +43,11 @@ type (
 		Driver        string `mapstructure:"driver"`
 		MasterConnStr string `mapstructure:"master-conn-string"`
 		SlaveConnStr  string `mapstructure:"slave-conn-string"`
+	}
+
+	// Monitoring represents monitoring configuration struct.
+	Monitoring struct {
+		Prometheus prometheus.Config `mapstructure:"prometheus"`
 	}
 )
 

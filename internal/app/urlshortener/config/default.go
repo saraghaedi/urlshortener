@@ -29,4 +29,9 @@ database:
   driver: postgres
   master-conn-string: postgresql://urldb:secret@127.0.0.1:5432/urldb?sslmode=disable&connect_timeout=30
   slave-conn-string: postgresql://urldb:secret@127.0.0.1:5432/urldb?sslmode=disable&connect_timeout=30
+
+monitoring:
+  prometheus:
+    enabled: true
+    address: ":9001"
 `

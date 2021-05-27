@@ -3,7 +3,6 @@ services:
 
   postgres:
     image: postgres:13.2
-    restart: always
     hostname: postgres
     container_name: postgres
     environment:
@@ -12,3 +11,24 @@ services:
       POSTGRES_USER: urldb
     ports:
       - 5432:5432
+
+  prometheus:
+    image: prom/prometheus:v2.27.1
+    hostname: prometheus
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+
+  grafana:
+    image: grafana/grafana:7.5.7
+    hostname: grafana
+    container_name: grafana
+    ports:
+      - 3000:3000

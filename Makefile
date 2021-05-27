@@ -8,8 +8,11 @@ export LDFLAGS="-w -s"
 
 all: format lint build
 
-run:
-	go run -ldflags $(LDFLAGS)  ./cmd/urlshortener
+run-server:
+	go run -ldflags $(LDFLAGS)  ./cmd/urlshortener server
+
+run-migrate:
+	go run -ldflags $(LDFLAGS)  ./cmd/urlshortener migrate
 
 build:
 	go build -ldflags $(LDFLAGS)  ./cmd/urlshortener
@@ -37,7 +40,7 @@ lint: check-linter
 	golangci-lint -c build/ci/.golangci.yml run $(ROOT)/...
 
 up:
-	docker-compose -f docker-compose.yml up -d
+	docker-compose -f ./deployments/docker/urlshortener/docker-compose.yml up -d
 
 down:
-	docker-compose -f docker-compose.yml down
+	docker-compose -f ./deployments/docker/urlshortener/docker-compose.yml down

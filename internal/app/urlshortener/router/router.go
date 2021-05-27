@@ -34,6 +34,7 @@ func New(cfg config.Config, masterDb *gorm.DB, slaveDb *gorm.DB) *echo.Echo {
 
 	e.Use(middleware.CORS())
 	e.Use(log.LoggerMiddleware(cfg.Logger.AccessLogger))
+	e.Use(prometheusMiddleware())
 
 	urlRepo := model.SQLURLRepo{
 		MasterDB: masterDb,
