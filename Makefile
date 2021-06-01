@@ -39,6 +39,16 @@ check-linter:
 lint: check-linter
 	golangci-lint -c build/ci/.golangci.yml run $(ROOT)/...
 
+test:
+	go test -ldflags $(LDFLAGS) -v -race -p 1 `go list ./... | grep -v integration`
+
+ci-test:
+	go test -ldflags $(LDFLAGS) -v -race -p 1 -coverprofile=coverage.txt -covermode=atomic ./...
+	go tool cover -func coverage.txt
+
+integration-tests:
+	go test -ldflags $(LDFLAGS) -v -race -p 1 `go list ./... | grep integration`
+
 up:
 	docker-compose -f ./deployments/docker/urlshortener/docker-compose.yml up -d
 

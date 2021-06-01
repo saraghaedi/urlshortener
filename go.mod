@@ -3,6 +3,7 @@ module github.com/saraghaedi/urlshortener
 go 1.14
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/carlescere/scheduler v0.0.0-20170109141437-ee74d2f83d82
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/golang-migrate/migrate/v4 v4.14.1

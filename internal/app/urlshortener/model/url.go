@@ -1,13 +1,16 @@
 package model
 
 import (
+	"errors"
 	"time"
 
 	"github.com/jinzhu/gorm"
 )
 
+var ErrRecordNotFount = errors.New("record not found")
+
 const (
-	repoName = "sql_URL"
+	repoName = "sql_url"
 )
 
 // URL represent url table structure.
@@ -46,6 +49,10 @@ func (s SQLURLRepo) FindByID(id uint64) (_ *URL, finalErr error) {
 	var result URL
 
 	if err := s.SlaveDB.Where("id = ?", id).Take(&result).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return nil, ErrRecordNotFount
+		}
+
 		return nil, err
 	}
 
