@@ -63,7 +63,7 @@ func (suite *URLRepoSuite) TestCreateAndFind() {
 
 func (suite *URLRepoSuite) TestNotFound() {
 	findByIDUrl, err := suite.repo.FindByID(10)
-	suite.Error(err, model.ErrRecordNotFount)
+	suite.Error(err, model.ErrRecordNotFound)
 	suite.Nil(findByIDUrl)
 }
 

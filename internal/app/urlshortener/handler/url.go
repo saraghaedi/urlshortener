@@ -57,10 +57,16 @@ func (u URLHandler) CallURL(c echo.Context) error {
 	id := utils.Base36Decoder(shortURL)
 
 	url, err := u.URLRepo.FindByID(id)
+
 	if err != nil {
+		if err == model.ErrRecordNotFound {
+			return echo.ErrNotFound
+		}
+
 		logrus.Errorf("failed to read url from db: %s", err.Error())
+
 		return echo.ErrInternalServerError
 	}
 
-	return c.Redirect(http.StatusMovedPermanently, url.URL)
+	return c.Redirect(http.StatusPermanentRedirect, url.URL)
 }

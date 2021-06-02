@@ -7,7 +7,8 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-var ErrRecordNotFount = errors.New("record not found")
+// ErrRecordNotFound represents an error for not finding an error in DB
+var ErrRecordNotFound = errors.New("record not found")
 
 const (
 	repoName = "sql_url"
@@ -50,7 +51,7 @@ func (s SQLURLRepo) FindByID(id uint64) (_ *URL, finalErr error) {
 
 	if err := s.SlaveDB.Where("id = ?", id).Take(&result).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			return nil, ErrRecordNotFount
+			return nil, ErrRecordNotFound
 		}
 
 		return nil, err
