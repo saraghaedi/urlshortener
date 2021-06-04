@@ -57,7 +57,6 @@ func (u URLHandler) CallURL(c echo.Context) error {
 	id := utils.Base36Decoder(shortURL)
 
 	url, err := u.URLRepo.FindByID(id)
-
 	if err != nil {
 		if err == model.ErrRecordNotFound {
 			return echo.ErrNotFound
