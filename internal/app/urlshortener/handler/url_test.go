@@ -65,32 +65,48 @@ func (suite *URLHandlerSuite) SetupSuite() {
 }
 
 func (suite *URLHandlerSuite) TestNewURL() {
-	tc := struct {
+	cases := []struct {
 		name      string
 		req       request.NewURL
 		status    int
 		repoError error
 	}{
-		name:      "successfully create a new shorted URL",
-		req:       request.NewURL{URL: "github.com/saraghaedi"},
-		status:    http.StatusOK,
-		repoError: nil,
+		{
+			name:      "successfully create a new shorted URL",
+			req:       request.NewURL{URL: "github.com/saraghaedi"},
+			status:    http.StatusOK,
+			repoError: nil,
+		},
+		{
+			name:      "Failed to create shorted URL: Empty URL",
+			req:       request.NewURL{URL: ""},
+			status:    http.StatusBadRequest,
+			repoError: nil,
+		},
+		{
+			name:      "Failed to create shorted URL: Wrong URL format",
+			req:       request.NewURL{URL: "Hello"},
+			status:    http.StatusBadRequest,
+			repoError: nil,
+		},
 	}
+	for i := range cases {
+		tc := cases[i]
+		suite.Run(tc.name, func() {
+			suite.fakeURLRepo.repoError = tc.repoError
 
-	suite.Run(tc.name, func() {
-		suite.fakeURLRepo.repoError = tc.repoError
+			data, err := json.Marshal(tc.req)
+			suite.NoError(err)
 
-		data, err := json.Marshal(tc.req)
-		suite.NoError(err)
+			w := httptest.NewRecorder()
+			req := httptest.NewRequest("POST", "/url", bytes.NewReader(data))
 
-		w := httptest.NewRecorder()
-		req := httptest.NewRequest("POST", "/url", bytes.NewReader(data))
+			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 
-		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-
-		suite.engine.ServeHTTP(w, req)
-		suite.Equal(tc.status, w.Code, tc.name)
-	})
+			suite.engine.ServeHTTP(w, req)
+			suite.Equal(tc.status, w.Code, tc.name)
+		})
+	}
 }
 
 func (suite *URLHandlerSuite) TestCallURL() {
@@ -140,6 +156,7 @@ func (suite *URLHandlerSuite) TestCallURL() {
 	}
 }
 
-func TestURLHandlerSuite(t *testing.T) {
-	suite.Run(t, new(URLHandlerSuite))
+func
+TestURLHandlerSuite(t *testing.T) {
+suite.Run(t, new(URLHandlerSuite))
 }

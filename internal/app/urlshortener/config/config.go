@@ -1,6 +1,8 @@
 package config
 
 import (
+	validation "github.com/go-ozzo/ozzo-validation"
+	"github.com/sirupsen/logrus"
 	"time"
 
 	"github.com/saraghaedi/urlshortener/pkg/prometheus"
@@ -51,11 +53,34 @@ type (
 	}
 )
 
+// Validate validates Database struct.
+func (d Database) Validate() error {
+	return validation.ValidateStruct(&d,
+		validation.Field(
+			&d.Driver,
+			validation.In("postgres"),
+		),
+	)
+}
+
+// Validate validates Config struct.
+func (c Config) Validate() error {
+	return validation.ValidateStruct(&c,
+		validation.Field(
+			&c.Database,
+		),
+	)
+}
+
 // Init initializes application configuration.
 func Init() Config {
 	var cfg Config
 
 	config.Init(app, cfgFile, &cfg, defaultConfig, cfgPrefix)
+
+	if err := cfg.Validate(); err != nil {
+		logrus.Fatalf("failed to validate configurations: %s", err.Error())
+	}
 
 	return cfg
 }

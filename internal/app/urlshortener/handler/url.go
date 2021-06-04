@@ -34,6 +34,11 @@ func (u URLHandler) NewURL(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 
+	if err := req.Validate(); err != nil {
+		logrus.Errorf("Create URL validation : %s", err.Error())
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
 	url := &model.URL{URL: req.URL}
 
 	if err := u.URLRepo.Create(url); err != nil {
