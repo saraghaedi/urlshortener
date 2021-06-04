@@ -156,7 +156,6 @@ func (suite *URLHandlerSuite) TestCallURL() {
 	}
 }
 
-func
-TestURLHandlerSuite(t *testing.T) {
-suite.Run(t, new(URLHandlerSuite))
+func TestURLHandlerSuite(t *testing.T) {
+	suite.Run(t, new(URLHandlerSuite))
 }

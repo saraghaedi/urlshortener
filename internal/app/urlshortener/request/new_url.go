@@ -10,6 +10,7 @@ type NewURL struct {
 	URL string `json:"url"`
 }
 
+// Validate validates NewURL struct
 func (n NewURL) Validate() error {
 	return validation.ValidateStruct(&n,
 		validation.Field(

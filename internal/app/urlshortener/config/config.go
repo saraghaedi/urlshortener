@@ -1,9 +1,10 @@
 package config
 
 import (
+	"time"
+
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/sirupsen/logrus"
-	"time"
 
 	"github.com/saraghaedi/urlshortener/pkg/prometheus"
 
