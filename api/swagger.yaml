@@ -1,0 +1,127 @@
+swagger: "2.0"
+
+info:
+  description: " Documentation of URL Shortener API"
+  version: "1.0.0"
+  title: "URL Shortener"
+  contact:
+    email: "saraghaedi75@gmail.com"
+
+host: "localhost:8080"
+tags:
+  - name: "Create"
+    description: "Create a shorted URL"
+  - name: "Call"
+    description: "Call the shorted URL"
+
+schemes:
+  - "http"
+
+consumes:
+  - "application/json"
+
+produces:
+  - "application/json"
+
+paths:
+
+  /url:
+    post:
+      tags:
+        - "Create"
+      summary: "Represent a request for creating a new shorted URL."
+      description: ""
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "The main URL that needs to be shorted."
+          required: true
+          schema:
+            $ref: "#/definitions/Request"
+      responses:
+        "200":
+          description: "URL Shorted successfully."
+          schema:
+            items:
+              $ref: "#/definitions/CreateResponse"
+        "400":
+          description: "Bad Request"
+          schema:
+            items:
+              $ref: "#/definitions/Response400"
+        "500":
+          description: "Internal Server Error"
+          schema:
+            items:
+              $ref: "#/definitions/Response500"
+
+  /{shortUrl}:
+    get:
+      tags:
+        - "Call"
+      summary: "Call shorted URL"
+      description: "Call shorted URL and redirect to the main URL."
+      parameters:
+        - name: "shortUrl"
+          in: "path"
+          description: "Shorted URL to be redirected."
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "Successful operation."
+          schema:
+            items:
+              $ref: "#/definitions/CallResponse"
+        "404":
+          description: "URL Not Found"
+          schema:
+            items:
+              $ref: "#/definitions/Response404"
+        "500":
+          description: "Internal Server error"
+          schema:
+            items:
+              $ref: "#/definitions/Response500"
+
+definitions:
+
+  Request:
+    type: "object"
+    required:
+      - "url"
+    properties:
+      url:
+        type: "string"
+        example: "https://github.com/saraghaedi"
+
+  CreateResponse:
+    properties:
+      short_url:
+        type: "string"
+        example: "3d"
+
+  CallResponse:
+    properties:
+      url:
+        type: "object"
+        example: "<!DOCTYPE html>"
+
+  Response400:
+    properties:
+      message:
+        type: "string"
+        example: "url cannot be blank."
+
+  Response404:
+    properties:
+      message:
+        type: "string"
+        example: "Not Found"
+
+  Response500:
+    properties:
+      message:
+        type: "string"
+        example: "Internal Server Error"
+
