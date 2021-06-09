@@ -23,10 +23,10 @@ steps:
       URLSHORTENER_DATABASE_DRIVER: "postgres"
       URLSHORTENER_DATABASE_MASTER_CONN_STRING: "postgresql://urldb:secret@127.0.0.1:5432/urldb?sslmode=disable&connect_timeout=30"
       URLSHORTENER_DATABASE_SLAVE_CONN_STRING: "postgresql://urldb:secret@127.0.0.1:5432/urldb?sslmode=disable&connect_timeout=30"
-      commands:
-        - sleep 10 # Wait 10 seconds for starting Postgres.
-        - make run-migrate
-        - make ci-test
+    commands:
+      - sleep 10 # Wait 10 seconds for starting Postgres.
+      - make run-migrate
+      - make ci-test
 
 #  - name: coverage
 #    image: plugins/codecov
