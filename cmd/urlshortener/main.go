@@ -13,7 +13,7 @@ const (
 
 func main() {
 	root := cmd.NewRootCommand()
-	fmt.Println("test drone ci")
+	fmt.Println("test drone ciiiiiii")
 
 	if root != nil {
 		if err := root.Execute(); err != nil {
