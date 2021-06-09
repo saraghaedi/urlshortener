@@ -21,8 +21,8 @@ steps:
     image: golang:1.15
     environment:
       URLSHORTENER_DATABASE_DRIVER: "postgres"
-      URLSHORTENER_DATABASE_MASTER_CONN_STRING: "postgresql://urldb:secret@127.0.0.1:5432/urldb?sslmode=disable&connect_timeout=30"
-      URLSHORTENER_DATABASE_SLAVE_CONN_STRING: "postgresql://urldb:secret@127.0.0.1:5432/urldb?sslmode=disable&connect_timeout=30"
+      URLSHORTENER_DATABASE_MASTER_CONN_STRING: "postgresql://urldb:secret@postgres:5432/urldb?sslmode=disable&connect_timeout=30"
+      URLSHORTENER_DATABASE_SLAVE_CONN_STRING: "postgresql://urldb:secret@postgres:5432/urldb?sslmode=disable&connect_timeout=30"
     commands:
       - sleep 10 # Wait 10 seconds for starting Postgres.
       - make run-migrate
