@@ -1,0 +1,107 @@
+---
+kind: pipeline
+type: docker
+name: lint
+
+steps:
+
+  - name: lint
+    image: golangci/golangci-lint:v1.23.8
+    commands:
+      - make lint
+
+---
+kind: pipeline
+type: docker
+name: test
+
+steps:
+
+  - name: test
+    image: golang:1.15
+    environment:
+      URLSHORTENER_DATABASE_DRIVER: "postgres"
+      URLSHORTENER_DATABASE_MASTER_CONN_STRING: "postgresql://urldb:secret@127.0.0.1:5432/urldb?sslmode=disable&connect_timeout=30"
+      URLSHORTENER_DATABASE_SLAVE_CONN_STRING: "postgresql://urldb:secret@127.0.0.1:5432/urldb?sslmode=disable&connect_timeout=30"
+
+      commands:
+        - sleep 10 # Wait 10 seconds for starting Postgres.
+        - make run-migrate
+        - make ci-test
+
+        - name: coverage
+          image: plugins/codecov
+          when:
+            branch:
+              - master
+            event:
+              - tag
+          settings:
+            token:
+              from_secret: codecov_token
+            files:
+              - coverage.txt
+services:
+
+  - name: postgres
+    image: postgres:12.4
+    environment:
+      POSTGRES_DB: "urldb"
+      POSTGRES_PASSWORD: "secret"
+      POSTGRES_USER: "urldb"
+
+depends_on:
+  - lint
+
+---
+kind: pipeline
+type: docker
+name: release
+
+steps:
+
+  - name: release
+    image: urlshortener/docker-builder:latest
+    when:
+      branch:
+        - master
+      event:
+        - tag
+    commands:
+      - make release APP_VERSION=${DRONE_TAG}
+
+  - name: github
+    image: plugins/github-release
+    when:
+      branch:
+        - master
+      event:
+        - tag
+    settings:
+      api_key:
+        from_secret: github_token
+      files: releases/*
+      checksum_file: urlshortener-${DRONE_TAG}-sha256-sum.txt
+      checksum:
+        - sha256
+
+  - name: docker
+    image: plugins/docker
+    when:
+      branch:
+        - master
+      event:
+        - tag
+    settings:
+      dockerfile: ./
+      repo: urlshortener/urlshortener
+      tags:
+        - latest
+        - ${DRONE_TAG##v}
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+
+depends_on:
+  - test
