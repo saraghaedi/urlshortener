@@ -28,18 +28,18 @@ steps:
       - make run-migrate
       - make ci-test
 
-#  - name: coverage
-#    image: plugins/codecov
-#    when:
-#      branch:
-#        - master
-#      event:
-#        - tag
-#    settings:
-#      token:
-#        from_secret: codecov_token
-#      files:
-#        - coverage.txt
+  - name: coverage
+    image: plugins/codecov
+    when:
+      branch:
+        - master
+      event:
+        - tag
+    settings:
+      token:
+        from_secret: codecov_token
+      files:
+        - coverage.txt
 
 services:
 
