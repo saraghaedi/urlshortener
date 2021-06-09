@@ -2,4 +2,4 @@ scrape_configs:
   - job_name: urlshortener
     scrape_interval: 5s
     static_configs:
-      - targets: ['192.168.178.12:9001']
+      - targets: ['urlshortener:9001']
