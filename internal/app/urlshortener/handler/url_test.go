@@ -47,18 +47,32 @@ func (f *fakeURLRepo) FindByID(id uint64) (*model.URL, error) {
 	return nil, model.ErrRecordNotFound
 }
 
+type fakeURLCounterRepo struct {
+	model.URLCounterRepo
+	repoError error
+}
+
+func (f *fakeURLCounterRepo)Incr(id uint64) error {
+	return nil
+}
+
 type URLHandlerSuite struct {
 	suite.Suite
 	engine      *echo.Echo
 	fakeURLRepo *fakeURLRepo
+	fakeURLCounterRepo *fakeURLCounterRepo
 }
 
 func (suite *URLHandlerSuite) SetupSuite() {
 	suite.engine = echo.New()
 
 	suite.fakeURLRepo = &fakeURLRepo{}
+	suite.fakeURLCounterRepo = &fakeURLCounterRepo{}
 
-	urlHandler := handler.URLHandler{URLRepo: suite.fakeURLRepo}
+	urlHandler := handler.URLHandler{
+		URLRepo: suite.fakeURLRepo,
+		URLCounterRepo: suite.fakeURLCounterRepo,
+	}
 
 	suite.engine.POST("/url", urlHandler.NewURL)
 	suite.engine.GET("/:shortUrl", urlHandler.CallURL)
