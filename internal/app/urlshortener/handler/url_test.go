@@ -49,17 +49,16 @@ func (f *fakeURLRepo) FindByID(id uint64) (*model.URL, error) {
 
 type fakeURLCounterRepo struct {
 	model.URLCounterRepo
-	repoError error
 }
 
-func (f *fakeURLCounterRepo)Incr(id uint64) error {
+func (f *fakeURLCounterRepo) Incr(id uint64) error {
 	return nil
 }
 
 type URLHandlerSuite struct {
 	suite.Suite
-	engine      *echo.Echo
-	fakeURLRepo *fakeURLRepo
+	engine             *echo.Echo
+	fakeURLRepo        *fakeURLRepo
 	fakeURLCounterRepo *fakeURLCounterRepo
 }
 
@@ -70,7 +69,7 @@ func (suite *URLHandlerSuite) SetupSuite() {
 	suite.fakeURLCounterRepo = &fakeURLCounterRepo{}
 
 	urlHandler := handler.URLHandler{
-		URLRepo: suite.fakeURLRepo,
+		URLRepo:        suite.fakeURLRepo,
 		URLCounterRepo: suite.fakeURLCounterRepo,
 	}
 
