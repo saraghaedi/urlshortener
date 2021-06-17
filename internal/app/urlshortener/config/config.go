@@ -3,6 +3,8 @@ package config
 import (
 	"time"
 
+	"github.com/saraghaedi/urlshortener/pkg/redis"
+
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/sirupsen/logrus"
 
@@ -23,6 +25,7 @@ type (
 	Config struct {
 		Logger     Logger     `mapstructure:"logger"`
 		Server     Server     `mapstructure:"server"`
+		Redis      Redis      `mapstructure:"redis"`
 		Database   Database   `mapstructure:"database"`
 		Monitoring Monitoring `mapstructure:"monitoring"`
 	}
@@ -46,6 +49,13 @@ type (
 		Driver        string `mapstructure:"driver"`
 		MasterConnStr string `mapstructure:"master-conn-string"`
 		SlaveConnStr  string `mapstructure:"slave-conn-string"`
+	}
+
+	// Redis represents Redis configuration struct.
+	Redis struct {
+		MasterAddress string        `mapstructure:"master-address"`
+		SlaveAddress  string        `mapstructure:"slave-address"`
+		Options       redis.Options `mapstructure:"options"`
 	}
 
 	// Monitoring represents monitoring configuration struct.

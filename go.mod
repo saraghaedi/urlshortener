@@ -8,6 +8,7 @@ require (
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
+	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/golang-migrate/migrate/v4 v4.14.1
 	github.com/jinzhu/gorm v1.9.16
 	github.com/labstack/echo/v4 v4.2.1

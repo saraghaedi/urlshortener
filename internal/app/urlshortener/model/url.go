@@ -11,7 +11,8 @@ import (
 var ErrRecordNotFound = errors.New("record not found")
 
 const (
-	repoName = "sql_url"
+	sqlRepoName   = "sql_url"
+	nosqlRepoName = "redis_url"
 )
 
 // URL represent url table structure.
@@ -36,7 +37,7 @@ type SQLURLRepo struct {
 func (s SQLURLRepo) Create(url *URL) (finalErr error) {
 	startTime := time.Now()
 
-	defer func() { metrics.report(repoName, "create", startTime, finalErr) }()
+	defer func() { metrics.report(sqlRepoName, "create", startTime, finalErr) }()
 
 	return s.MasterDB.Create(url).Error
 }
@@ -45,7 +46,7 @@ func (s SQLURLRepo) Create(url *URL) (finalErr error) {
 func (s SQLURLRepo) FindByID(id uint64) (_ *URL, finalErr error) {
 	startTime := time.Now()
 
-	defer func() { metrics.report(repoName, "find_by_id", startTime, finalErr) }()
+	defer func() { metrics.report(sqlRepoName, "find_by_id", startTime, finalErr) }()
 
 	var result URL
 

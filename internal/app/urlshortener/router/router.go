@@ -1,6 +1,7 @@
 package router
 
 import (
+	"github.com/go-redis/redis"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -12,7 +13,7 @@ import (
 )
 
 // New creates all the routes.
-func New(cfg config.Config, masterDb *gorm.DB, slaveDb *gorm.DB) *echo.Echo {
+func New(cfg config.Config, masterDb, slaveDb *gorm.DB, masterRedis, slaveRedis redis.Cmdable) *echo.Echo {
 	e := echo.New()
 
 	debug := logrus.IsLevelEnabled(logrus.DebugLevel)
@@ -41,7 +42,12 @@ func New(cfg config.Config, masterDb *gorm.DB, slaveDb *gorm.DB) *echo.Echo {
 		SlaveDB:  slaveDb,
 	}
 
-	urlHandler := handler.NewURLHandler(urlRepo)
+	urlCounterRepo := model.RedisURLCounterRepo{
+		RedisMasterClient: masterRedis,
+		RedisSlaveClient:  slaveRedis,
+	}
+
+	urlHandler := handler.NewURLHandler(urlRepo, urlCounterRepo)
 
 	e.POST("/url", urlHandler.NewURL)
 	e.GET("/:shortUrl", urlHandler.CallURL)

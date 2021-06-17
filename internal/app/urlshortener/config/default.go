@@ -30,6 +30,24 @@ database:
   master-conn-string: postgresql://urldb:secret@127.0.0.1:5432/urldb?sslmode=disable&connect_timeout=30
   slave-conn-string: postgresql://urldb:secret@127.0.0.1:5432/urldb?sslmode=disable&connect_timeout=30
 
+redis:
+  master-address: 127.0.0.1:6379
+  slave-address: 127.0.0.1:6379
+  options:
+    sentinel: false
+    master-name: mymaster
+    password: ""
+    pool-size: 0
+    min-idle-conns: 20
+    dial-timeout: 5s
+    read-timeout: 3s
+    write-timeout: 3s
+    pool-timeout: 4s
+    idle-timeout: 5m
+    max-retries: 5
+    min-retry-backoff: 1s
+    max-retry-backoff: 3s
+
 monitoring:
   prometheus:
     enabled: true

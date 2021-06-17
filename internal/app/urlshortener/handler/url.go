@@ -15,13 +15,15 @@ import (
 
 // URLHandler handles all incoming requests related to URLs.
 type URLHandler struct {
-	URLRepo model.URLRepo
+	URLRepo        model.URLRepo
+	URLCounterRepo model.URLCounterRepo
 }
 
 // NewURLHandler returns a new URLHandler.
-func NewURLHandler(urlRepo model.URLRepo) *URLHandler {
+func NewURLHandler(urlRepo model.URLRepo, urlCounterRepo model.URLCounterRepo) *URLHandler {
 	return &URLHandler{
-		URLRepo: urlRepo,
+		URLRepo:        urlRepo,
+		URLCounterRepo: urlCounterRepo,
 	}
 }
 
@@ -72,5 +74,10 @@ func (u URLHandler) CallURL(c echo.Context) error {
 		return echo.ErrInternalServerError
 	}
 
-	return c.Redirect(http.StatusPermanentRedirect, url.URL)
+	err = u.URLCounterRepo.Incr(id)
+	if err != nil {
+		logrus.Errorf("failed to increase URL counter: %s", err.Error())
+	}
+
+	return c.Redirect(http.StatusTemporaryRedirect, url.URL)
 }

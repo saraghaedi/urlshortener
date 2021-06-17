@@ -7,6 +7,7 @@ import (
 	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/router"
 	"github.com/saraghaedi/urlshortener/pkg/database"
 	"github.com/saraghaedi/urlshortener/pkg/prometheus"
+	"github.com/saraghaedi/urlshortener/pkg/redis"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -26,9 +27,26 @@ func main(cfg config.Config) {
 		logrus.Fatalf("faled to connect to slave database: %s", err.Error())
 	}
 
+	redisCfg := cfg.Redis
+
+	redisMasterClient, redisMasterClose := redis.Create(redisCfg.MasterAddress, redisCfg.Options, true)
+	redisSlaveClient, redisSlaveClose := redis.Create(redisCfg.SlaveAddress, redisCfg.Options, false)
+
+	defer func() {
+		if err := redisMasterClose(); err != nil {
+			logrus.Errorf("redis master connection close error: %s", err.Error())
+		}
+
+		if err := redisSlaveClose(); err != nil {
+			logrus.Errorf("redis slave connection close error: %s", err.Error())
+		}
+	}()
+
 	_, err1 := scheduler.Every(healthCheckInterval).Seconds().Run(func() {
 		metric.ReportDbStatus(masterDb, "database_master")
 		metric.ReportDbStatus(slaveDb, "database_slave")
+		metric.ReportRedisStatus(redisMasterClient, "redis_master")
+		metric.ReportRedisStatus(redisSlaveClient, "redis_slave")
 	})
 	if err1 != nil {
 		logrus.Fatalf("failed to start metric scheduler: %s", err1.Error())
@@ -36,7 +54,7 @@ func main(cfg config.Config) {
 
 	go prometheus.StartServer(cfg.Monitoring.Prometheus)
 
-	r := router.New(cfg, masterDb, slaveDb)
+	r := router.New(cfg, masterDb, slaveDb, redisMasterClient, redisSlaveClient)
 	logrus.Fatal(r.Start(cfg.Server.Address))
 }
 

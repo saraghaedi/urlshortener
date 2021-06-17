@@ -120,7 +120,7 @@ func (suite *URLHandlerSuite) TestCallURL() {
 		{
 			name:       "successfully call shorted URL ",
 			shortedURL: "1",
-			status:     http.StatusPermanentRedirect,
+			status:     http.StatusTemporaryRedirect,
 			repoError:  nil,
 			resp:       response.NewURL{ShortURL: "1"},
 		},
