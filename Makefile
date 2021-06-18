@@ -14,6 +14,9 @@ run-server:
 run-migrate:
 	go run -ldflags $(LDFLAGS)  ./cmd/urlshortener migrate
 
+run-sync:
+	go run -ldflags $(LDFLAGS)  ./cmd/urlshortener sync
+
 build:
 	go build -ldflags $(LDFLAGS)  ./cmd/urlshortener
 

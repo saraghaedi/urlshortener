@@ -2,6 +2,8 @@
 // sources:
 // 1_create_urls_table.down.sql
 // 1_create_urls_table.up.sql
+// 2_add_column_count_to_urls_table.down.sql
+// 2_add_column_count_to_urls_table.up.sql
 // DO NOT EDIT!
 
 package postgres
@@ -84,7 +86,7 @@ func _1_create_urls_tableDownSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "1_create_urls_table.down.sql", size: 26, mode: os.FileMode(420), modTime: time.Unix(1618848738, 0)}
+	info := bindataFileInfo{name: "1_create_urls_table.down.sql", size: 26, mode: os.FileMode(420), modTime: time.Unix(1622458167, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -104,7 +106,47 @@ func _1_create_urls_tableUpSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "1_create_urls_table.up.sql", size: 246, mode: os.FileMode(420), modTime: time.Unix(1618848738, 0)}
+	info := bindataFileInfo{name: "1_create_urls_table.up.sql", size: 246, mode: os.FileMode(420), modTime: time.Unix(1622458167, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var __2_add_column_count_to_urls_tableDownSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x4a\xcc\x29\x49\x2d\x52\x28\x49\x4c\xca\x49\x55\x28\x2d\xca\x29\x56\x48\x29\xca\x2f\x50\x48\xce\xcf\x29\xcd\xcd\x53\x48\xce\x2f\xcd\x2b\xb1\x06\x04\x00\x00\xff\xff\x9e\x83\xe5\x0b\x23\x00\x00\x00")
+
+func _2_add_column_count_to_urls_tableDownSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__2_add_column_count_to_urls_tableDownSql,
+		"2_add_column_count_to_urls_table.down.sql",
+	)
+}
+
+func _2_add_column_count_to_urls_tableDownSql() (*asset, error) {
+	bytes, err := _2_add_column_count_to_urls_tableDownSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "2_add_column_count_to_urls_table.down.sql", size: 35, mode: os.FileMode(420), modTime: time.Unix(1624034168, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var __2_add_column_count_to_urls_tableUpSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x04\xc0\xb1\x0d\x80\x40\x0c\x03\xc0\x9e\x29\x3c\x02\x3d\x15\xa3\x3c\x9f\x20\x21\x99\x44\x7a\xec\xfd\xb9\x93\xca\x05\x8d\x8b\x09\x2f\x7e\x18\x11\x98\x4d\xbf\x85\xd9\x2e\xe1\x29\xa1\x5a\x28\x93\x88\xbc\x87\x29\xec\xc7\xf6\x07\x00\x00\xff\xff\x9e\x58\xbd\xcc\x3a\x00\x00\x00")
+
+func _2_add_column_count_to_urls_tableUpSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__2_add_column_count_to_urls_tableUpSql,
+		"2_add_column_count_to_urls_table.up.sql",
+	)
+}
+
+func _2_add_column_count_to_urls_tableUpSql() (*asset, error) {
+	bytes, err := _2_add_column_count_to_urls_tableUpSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "2_add_column_count_to_urls_table.up.sql", size: 58, mode: os.FileMode(420), modTime: time.Unix(1624034168, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -161,8 +203,10 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"1_create_urls_table.down.sql": _1_create_urls_tableDownSql,
-	"1_create_urls_table.up.sql":   _1_create_urls_tableUpSql,
+	"1_create_urls_table.down.sql":              _1_create_urls_tableDownSql,
+	"1_create_urls_table.up.sql":                _1_create_urls_tableUpSql,
+	"2_add_column_count_to_urls_table.down.sql": _2_add_column_count_to_urls_tableDownSql,
+	"2_add_column_count_to_urls_table.up.sql":   _2_add_column_count_to_urls_tableUpSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -206,8 +250,10 @@ type bintree struct {
 }
 
 var _bintree = &bintree{nil, map[string]*bintree{
-	"1_create_urls_table.down.sql": {_1_create_urls_tableDownSql, map[string]*bintree{}},
-	"1_create_urls_table.up.sql":   {_1_create_urls_tableUpSql, map[string]*bintree{}},
+	"1_create_urls_table.down.sql":              {_1_create_urls_tableDownSql, map[string]*bintree{}},
+	"1_create_urls_table.up.sql":                {_1_create_urls_tableUpSql, map[string]*bintree{}},
+	"2_add_column_count_to_urls_table.down.sql": {_2_add_column_count_to_urls_tableDownSql, map[string]*bintree{}},
+	"2_add_column_count_to_urls_table.up.sql":   {_2_add_column_count_to_urls_tableUpSql, map[string]*bintree{}},
 }}
 
 // RestoreAsset restores an asset under the given directory

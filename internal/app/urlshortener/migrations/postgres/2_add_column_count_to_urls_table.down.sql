@@ -1,0 +1,1 @@
+alter table urls drop column count;

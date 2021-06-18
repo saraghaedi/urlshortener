@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/cmd/migrate"
 	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/cmd/server"
+	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/cmd/sync"
 	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/config"
 	"github.com/saraghaedi/urlshortener/pkg/log"
 	"github.com/spf13/cobra"
@@ -21,6 +22,7 @@ func NewRootCommand() *cobra.Command {
 
 	migrate.Register(root, cfg)
 	server.Register(root, cfg)
+	sync.Register(root, cfg)
 
 	return root
 }

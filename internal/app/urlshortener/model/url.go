@@ -15,25 +15,27 @@ const (
 	nosqlRepoName = "redis_url"
 )
 
-// URL represent url table structure.
+// URL represents url table structure.
 type URL struct {
 	gorm.Model
-	URL string `json:"url"`
+	URL   string `json:"url"`
+	Count int64  `json:"count"`
 }
 
-// URLRepo represent repository model.
+// URLRepo represents repository model.
 type URLRepo interface {
 	Create(url *URL) error
 	FindByID(id uint64) (*URL, error)
+	Update(id uint64, additionalCount int64) error
 }
 
-// SQLURLRepo represent repository model for SQL databases.
+// SQLURLRepo represents repository model for SQL databases.
 type SQLURLRepo struct {
 	MasterDB *gorm.DB
 	SlaveDB  *gorm.DB
 }
 
-// Create create a new shorted url in database.
+// Create creates a new shorted url in database.
 func (s SQLURLRepo) Create(url *URL) (finalErr error) {
 	startTime := time.Now()
 
@@ -42,7 +44,7 @@ func (s SQLURLRepo) Create(url *URL) (finalErr error) {
 	return s.MasterDB.Create(url).Error
 }
 
-// FindByID find a url in database by ID.
+// FindByID finds a url in database by ID.
 func (s SQLURLRepo) FindByID(id uint64) (_ *URL, finalErr error) {
 	startTime := time.Now()
 
@@ -59,4 +61,19 @@ func (s SQLURLRepo) FindByID(id uint64) (_ *URL, finalErr error) {
 	}
 
 	return &result, nil
+}
+
+// Update updates count column in database.
+func (s SQLURLRepo) Update(id uint64, additionalCount int64) (finalErr error) {
+	startTime := time.Now()
+
+	defer func() { metrics.report(sqlRepoName, "update", startTime, finalErr) }()
+
+	var u URL
+
+	if err := s.SlaveDB.Where("id = ?", id).Find(&u).Error; err != nil {
+		return err
+	}
+
+	return s.MasterDB.Model(URL{}).Where("id = ?", id).Update("count", u.Count+additionalCount).Error
 }
