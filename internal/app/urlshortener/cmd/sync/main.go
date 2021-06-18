@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	syncInterval        = 5 * time.Second
+	syncInterval        = 5 * time.Minute
 	healthCheckInterval = 1
 )
 
