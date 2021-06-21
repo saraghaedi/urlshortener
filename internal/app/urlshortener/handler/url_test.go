@@ -3,6 +3,7 @@ package handler_test
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -23,6 +24,11 @@ type fakeURLRepo struct {
 	repoError error
 }
 
+type fakeURLCounterRepo struct {
+	model.URLCounterRepo
+	repoError error
+}
+
 func (f *fakeURLRepo) Create(url *model.URL) error {
 	url.ID = 1
 	return f.repoError
@@ -37,7 +43,7 @@ func (f *fakeURLRepo) FindByID(id uint64) (*model.URL, error) {
 		Model: gorm.Model{
 			ID: 1,
 		},
-		URL: "github.com/saraghaedi",
+		URL: "https://github.com/saraghaedi",
 	}
 
 	if id == uint64(url.ID) {
@@ -47,12 +53,8 @@ func (f *fakeURLRepo) FindByID(id uint64) (*model.URL, error) {
 	return nil, model.ErrRecordNotFound
 }
 
-type fakeURLCounterRepo struct {
-	model.URLCounterRepo
-}
-
 func (f *fakeURLCounterRepo) Incr(id uint64) error {
-	return nil
+	return f.repoError
 }
 
 type URLHandlerSuite struct {
@@ -102,6 +104,12 @@ func (suite *URLHandlerSuite) TestNewURL() {
 			status:    http.StatusBadRequest,
 			repoError: nil,
 		},
+		{
+			name:      "Failed to create shorted URL: Repo error",
+			req:       request.NewURL{URL: "github.com/saraghaedi"},
+			status:    http.StatusInternalServerError,
+			repoError: errors.New("something went wrong"),
+		},
 	}
 	for i := range cases {
 		tc := cases[i]
@@ -118,37 +126,63 @@ func (suite *URLHandlerSuite) TestNewURL() {
 
 			suite.engine.ServeHTTP(w, req)
 			suite.Equal(tc.status, w.Code, tc.name)
+
+			if tc.status == http.StatusOK {
+				var resp response.NewURL
+
+				suite.NoError(json.Unmarshal(w.Body.Bytes(), &resp))
+
+				suite.NotEmpty(resp.ShortURL)
+			}
 		})
 	}
 }
 
 func (suite *URLHandlerSuite) TestCallURL() {
 	cases := []struct {
-		name       string
-		shortedURL string
-		status     int
-		repoError  error
-		resp       response.NewURL
+		name           string
+		shortedURL     string
+		status         int
+		sqlRepoError   error
+		redisRepoError error
+		resp           response.NewURL
 	}{
 		{
-			name:       "successfully call shorted URL ",
-			shortedURL: "1",
-			status:     http.StatusTemporaryRedirect,
-			repoError:  nil,
-			resp:       response.NewURL{ShortURL: "1"},
+			name:           "successfully call shorted URL ",
+			shortedURL:     "1",
+			status:         http.StatusTemporaryRedirect,
+			sqlRepoError:   nil,
+			redisRepoError: nil,
+			resp:           response.NewURL{ShortURL: "1"},
 		},
 		{
-			name:       "failed to call shorted URL",
-			shortedURL: "10",
-			status:     http.StatusNotFound,
-			repoError:  nil,
+			name:           "failed to call shorted URL",
+			shortedURL:     "10",
+			status:         http.StatusNotFound,
+			sqlRepoError:   nil,
+			redisRepoError: nil,
+		},
+		{
+			name:           "sql repo error",
+			shortedURL:     "1",
+			status:         http.StatusInternalServerError,
+			sqlRepoError:   errors.New("something went wrong"),
+			redisRepoError: nil,
+		},
+		{
+			name:           "redis repo error",
+			shortedURL:     "1",
+			status:         http.StatusTemporaryRedirect,
+			redisRepoError:   errors.New("something went wrong"),
+			sqlRepoError: nil,
 		},
 	}
 
 	for i := range cases {
 		tc := cases[i]
 		suite.Run(tc.name, func() {
-			suite.fakeURLRepo.repoError = tc.repoError
+			suite.fakeURLRepo.repoError = tc.sqlRepoError
+			suite.fakeURLCounterRepo.repoError = tc.redisRepoError
 
 			w := httptest.NewRecorder()
 			req := httptest.NewRequest("GET", fmt.Sprintf("/%s", tc.shortedURL), nil)
@@ -157,14 +191,6 @@ func (suite *URLHandlerSuite) TestCallURL() {
 
 			suite.engine.ServeHTTP(w, req)
 			suite.Equal(tc.status, w.Code, tc.name)
-
-			if tc.status == http.StatusOK {
-				var resp response.NewURL
-
-				suite.NoError(json.Unmarshal(w.Body.Bytes(), &resp))
-
-				suite.Equal(tc.resp.ShortURL, resp.ShortURL)
-			}
 		})
 	}
 }

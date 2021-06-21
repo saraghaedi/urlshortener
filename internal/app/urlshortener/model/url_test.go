@@ -47,7 +47,7 @@ func (suite *URLRepoSuite) TearDownTest() {
 
 func (suite *URLRepoSuite) TestCreateAndFind() {
 	url := model.URL{
-		URL: "github.com/saraghaedi",
+		URL: "https://github.com/saraghaedi",
 	}
 
 	err := suite.repo.Create(&url)
@@ -65,6 +65,25 @@ func (suite *URLRepoSuite) TestNotFound() {
 	findByIDUrl, err := suite.repo.FindByID(10)
 	suite.Error(err, model.ErrRecordNotFound)
 	suite.Nil(findByIDUrl)
+}
+
+func (suite *URLRepoSuite) TestUpdateCounter() {
+	url := model.URL{
+		URL: "https://github.com/saraghaedi",
+	}
+
+	err := suite.repo.Create(&url)
+	suite.NoError(err)
+
+	id := url.ID
+
+	err = suite.repo.Update(uint64(id), 10)
+	suite.NoError(err)
+
+	updatedURL, err := suite.repo.FindByID(uint64(id))
+	suite.NoError(err)
+
+	suite.EqualValues(10, updatedURL.Count)
 }
 
 func TestURLRepoSuite(t *testing.T) {
