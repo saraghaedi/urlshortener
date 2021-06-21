@@ -2,11 +2,12 @@ package model_test
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/config"
 	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/model"
 	"github.com/saraghaedi/urlshortener/pkg/redis"
 	"github.com/stretchr/testify/suite"
-	"testing"
 )
 
 type URLCounterRepoSuite struct {
@@ -45,15 +46,19 @@ func (suite *URLCounterRepoSuite) TestURLCounterRepo() {
 	suite.NoError(err)
 
 	value, err := suite.CounterRepo.Get(key)
+	suite.NoError(err)
 	suite.EqualValues(1, value)
 
 	err = suite.CounterRepo.Decr(id, 1)
 	suite.NoError(err)
 
 	value, err = suite.CounterRepo.Get(key)
+	suite.NoError(err)
 	suite.EqualValues(0, value)
 
 	keys, err := suite.CounterRepo.Keys()
+	suite.NoError(err)
+
 	keysList := []string{key}
 	suite.Equal(keysList, keys)
 }

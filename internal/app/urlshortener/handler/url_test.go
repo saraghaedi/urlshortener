@@ -173,8 +173,8 @@ func (suite *URLHandlerSuite) TestCallURL() {
 			name:           "redis repo error",
 			shortedURL:     "1",
 			status:         http.StatusTemporaryRedirect,
-			redisRepoError:   errors.New("something went wrong"),
-			sqlRepoError: nil,
+			redisRepoError: errors.New("something went wrong"),
+			sqlRepoError:   nil,
 		},
 	}
 
