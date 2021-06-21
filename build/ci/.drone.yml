@@ -23,6 +23,8 @@ steps:
       URLSHORTENER_DATABASE_DRIVER: "postgres"
       URLSHORTENER_DATABASE_MASTER_CONN_STRING: "postgresql://urldb:secret@postgres:5432/urldb?sslmode=disable&connect_timeout=30"
       URLSHORTENER_DATABASE_SLAVE_CONN_STRING: "postgresql://urldb:secret@postgres:5432/urldb?sslmode=disable&connect_timeout=30"
+      URLSHORTENER_REDIS_MASTER_ADDRESS: redis:6379
+      URLSHORTENER_REDIS_SLAVE_ADDRESS: redis:6379
     commands:
       - sleep 10 # Wait 10 seconds for starting Postgres.
       - make run-migrate
@@ -47,6 +49,9 @@ services:
       POSTGRES_DB: "urldb"
       POSTGRES_PASSWORD: "secret"
       POSTGRES_USER: "urldb"
+
+  - name: redis
+    image: redis:6.2.4-alpine
 
 depends_on:
   - lint
