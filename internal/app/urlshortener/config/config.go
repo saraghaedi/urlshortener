@@ -37,7 +37,7 @@ type (
 	// Logger represents logger configuration struct.
 	Logger struct {
 		AccessLogger log.AccessLogger `mapstructure:"access"`
-		AppLogger    log.AppLogger    `mapstructure:"App"`
+		AppLogger    log.AppLogger    `mapstructure:"app"`
 	}
 
 	// Server represents server configuration struct.

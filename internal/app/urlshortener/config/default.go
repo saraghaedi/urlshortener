@@ -11,9 +11,9 @@ logger:
     max-size: 1024
     max-backups: 7
     max-age: 7
-  App:
+  app:
     level: info
-    path: "/var/log/App.log"
+    path: "/var/log/app.log"
     max-size: 1024
     max-backups: 7
     max-age: 7
