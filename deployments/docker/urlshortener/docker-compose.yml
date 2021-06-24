@@ -19,6 +19,13 @@ services:
     ports:
       - 6379:6379
 
+  nats-server:
+    image: nats:2.2.6-alpine
+    hostname: nats-server
+    container_name: nats-server
+    ports:
+      - 4222:4222
+
 #  urlshortener:
 #    image: urlshortener:latest
 #    hostname: urlshortener

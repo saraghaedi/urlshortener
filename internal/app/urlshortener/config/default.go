@@ -11,9 +11,9 @@ logger:
     max-size: 1024
     max-backups: 7
     max-age: 7
-  app:
+  App:
     level: info
-    path: "/var/log/app.log"
+    path: "/var/log/App.log"
     max-size: 1024
     max-backups: 7
     max-age: 7
@@ -47,6 +47,10 @@ redis:
     max-retries: 5
     min-retry-backoff: 1s
     max-retry-backoff: 3s
+
+nats:
+  addresses:
+    - nats://127.0.0.1:4222
 
 monitoring:
   prometheus:
