@@ -48,6 +48,10 @@ redis:
     min-retry-backoff: 1s
     max-retry-backoff: 3s
 
+nats:
+  addresses:
+    - nats://127.0.0.1:4222
+
 monitoring:
   prometheus:
     enabled: true

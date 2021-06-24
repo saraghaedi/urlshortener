@@ -15,6 +15,8 @@ require (
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/martinlindhe/base36 v1.1.0
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
+	github.com/nats-io/nats-server/v2 v2.3.0 // indirect
+	github.com/nats-io/nats.go v1.11.0
 	github.com/pelletier/go-toml v1.9.0 // indirect
 	github.com/prometheus/client_golang v0.9.3
 	github.com/sirupsen/logrus v1.8.1

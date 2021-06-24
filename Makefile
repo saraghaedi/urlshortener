@@ -17,6 +17,9 @@ run-migrate:
 run-sync:
 	go run -ldflags $(LDFLAGS)  ./cmd/urlshortener sync
 
+run-worker:
+	go run -ldflags $(LDFLAGS)  ./cmd/urlshortener worker
+
 build:
 	go build -ldflags $(LDFLAGS)  ./cmd/urlshortener
 

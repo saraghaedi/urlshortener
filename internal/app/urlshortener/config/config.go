@@ -3,6 +3,8 @@ package config
 import (
 	"time"
 
+	"github.com/saraghaedi/urlshortener/pkg/nats"
+
 	"github.com/saraghaedi/urlshortener/pkg/redis"
 
 	validation "github.com/go-ozzo/ozzo-validation"
@@ -15,7 +17,8 @@ import (
 )
 
 const (
-	app       = "urlshortener"
+	// App is the application name.
+	App       = "urlshortener"
 	cfgFile   = "config.yaml"
 	cfgPrefix = "urlshortener"
 )
@@ -23,11 +26,12 @@ const (
 type (
 	// Config represents application configuration struct.
 	Config struct {
-		Logger     Logger     `mapstructure:"logger"`
-		Server     Server     `mapstructure:"server"`
-		Redis      Redis      `mapstructure:"redis"`
-		Database   Database   `mapstructure:"database"`
-		Monitoring Monitoring `mapstructure:"monitoring"`
+		Logger     Logger       `mapstructure:"logger"`
+		Server     Server       `mapstructure:"server"`
+		Redis      Redis        `mapstructure:"redis"`
+		Database   Database     `mapstructure:"database"`
+		Nats       nats.Options `mapstructure:"nats"`
+		Monitoring Monitoring   `mapstructure:"monitoring"`
 	}
 
 	// Logger represents logger configuration struct.
@@ -87,7 +91,7 @@ func (c Config) Validate() error {
 func Init() Config {
 	var cfg Config
 
-	config.Init(app, cfgFile, &cfg, defaultConfig, cfgPrefix)
+	config.Init(App, cfgFile, &cfg, defaultConfig, cfgPrefix)
 
 	if err := cfg.Validate(); err != nil {
 		logrus.Fatalf("failed to validate configurations: %s", err.Error())

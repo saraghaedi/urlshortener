@@ -1,18 +1,19 @@
 package sync
 
 import (
-	"strconv"
-	"strings"
 	"time"
+
+	pkgnats "github.com/saraghaedi/urlshortener/pkg/nats"
 
 	"github.com/carlescere/scheduler"
 	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/config"
 	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/metric"
 	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/model"
-	"github.com/saraghaedi/urlshortener/pkg/database"
 	"github.com/saraghaedi/urlshortener/pkg/redis"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+
+	"github.com/nats-io/nats.go"
 )
 
 const (
@@ -21,16 +22,6 @@ const (
 )
 
 func main(cfg config.Config) {
-	masterDb, err := database.New(cfg.Database.Driver, cfg.Database.MasterConnStr)
-	if err != nil {
-		logrus.Fatalf("faled to connect to master database: %s", err.Error())
-	}
-
-	slaveDb, err := database.New(cfg.Database.Driver, cfg.Database.SlaveConnStr)
-	if err != nil {
-		logrus.Fatalf("faled to connect to slave database: %s", err.Error())
-	}
-
 	redisCfg := cfg.Redis
 
 	redisMasterClient, redisMasterClose := redis.Create(redisCfg.MasterAddress, redisCfg.Options, true)
@@ -47,8 +38,6 @@ func main(cfg config.Config) {
 	}()
 
 	_, err1 := scheduler.Every(healthCheckInterval).Seconds().Run(func() {
-		metric.ReportDbStatus(masterDb, "database_master")
-		metric.ReportDbStatus(slaveDb, "database_slave")
 		metric.ReportRedisStatus(redisMasterClient, "redis_master")
 		metric.ReportRedisStatus(redisSlaveClient, "redis_slave")
 	})
@@ -56,67 +45,41 @@ func main(cfg config.Config) {
 		logrus.Fatalf("failed to start metric scheduler: %s", err1.Error())
 	}
 
-	urlRepo := model.SQLURLRepo{
-		MasterDB: masterDb,
-		SlaveDB:  slaveDb,
-	}
-
 	urlCounterRepo := model.RedisURLCounterRepo{
 		RedisMasterClient: redisMasterClient,
 		RedisSlaveClient:  redisSlaveClient,
 	}
 
-	scheduleWorker(urlRepo, urlCounterRepo)
+	natsConn, err := pkgnats.Create(cfg.Nats)
+	if err != nil {
+		logrus.Fatalf("Failed to create nats connection: %s", err.Error())
+	}
+
+	defer natsConn.Close()
+
+	scheduleWorker(urlCounterRepo, natsConn)
 }
 
-func scheduleWorker(urlRepo model.URLRepo, urlCounterRepo model.URLCounterRepo) {
+func scheduleWorker(urlCounterRepo model.URLCounterRepo, natsConn *nats.Conn) {
 	for {
 		time.Sleep(syncInterval)
 
-		if err := runWorker(urlRepo, urlCounterRepo); err != nil {
+		if err := runWorker(urlCounterRepo, natsConn); err != nil {
 			logrus.Errorf("failed to run worker: %s", err.Error())
 		}
 	}
 }
 
-func runWorker(urlRepo model.URLRepo, urlCounterRepo model.URLCounterRepo) error {
+func runWorker(urlCounterRepo model.URLCounterRepo, natsConn *nats.Conn) error {
 	keys, err := urlCounterRepo.Keys()
 	if err != nil {
 		return err
 	}
 
 	for _, key := range keys {
-		if err := updateCounter(key, urlRepo, urlCounterRepo); err != nil {
-			logrus.Errorf("failed to update url view count: %s", err.Error())
+		if err := natsConn.Publish(config.App, []byte(key)); err != nil {
+			logrus.Errorf("failed to publish key to nats: %s", err.Error())
 		}
-	}
-
-	return nil
-}
-
-func updateCounter(key string, urlRepo model.URLRepo, urlCounterRepo model.URLCounterRepo) error {
-	count, err := urlCounterRepo.Get(key)
-	if err != nil {
-		return err
-	}
-
-	if count == 0 {
-		return nil
-	}
-
-	idStr := strings.Split(key, ":")[2]
-
-	id, err := strconv.ParseInt(idStr, 0, 64)
-	if err != nil {
-		return err
-	}
-
-	if err := urlRepo.Update(uint64(id), count); err != nil {
-		return err
-	}
-
-	if err := urlCounterRepo.Decr(uint64(id), count); err != nil {
-		return err
 	}
 
 	return nil
@@ -126,7 +89,7 @@ func updateCounter(key string, urlRepo model.URLRepo, urlCounterRepo model.URLCo
 func Register(root *cobra.Command, cfg config.Config) {
 	cmd := &cobra.Command{
 		Use:   "sync",
-		Short: "Sync database with Redis url counts",
+		Short: "Schedule URL keys for updating its counter",
 		Run: func(cmd *cobra.Command, args []string) {
 			main(cfg)
 		},
