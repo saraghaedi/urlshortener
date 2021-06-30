@@ -37,17 +37,21 @@ func New(cfg config.Config, masterDb, slaveDb *gorm.DB, masterRedis, slaveRedis 
 	e.Use(log.LoggerMiddleware(cfg.Logger.AccessLogger))
 	e.Use(prometheusMiddleware())
 
-	urlRepo := model.SQLURLRepo{
-		MasterDB: masterDb,
-		SlaveDB:  slaveDb,
-	}
-
 	urlCounterRepo := model.RedisURLCounterRepo{
 		RedisMasterClient: masterRedis,
 		RedisSlaveClient:  slaveRedis,
 	}
 
-	urlHandler := handler.NewURLHandler(urlRepo, urlCounterRepo)
+	redisURLRepo := model.RedisURLRepo{
+		Base: model.SQLURLRepo{
+			MasterDB: masterDb,
+			SlaveDB: slaveDb,
+		},
+		RedisMasterClient: masterRedis,
+		RedisSlaveClient:  slaveRedis,
+	}
+
+	urlHandler := handler.NewURLHandler(redisURLRepo, urlCounterRepo)
 
 	e.POST("/url", urlHandler.NewURL)
 	e.GET("/:shortUrl", urlHandler.CallURL)
