@@ -1,13 +1,14 @@
 package model_test
 
 import (
+	"testing"
+
 	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/config"
 	"github.com/saraghaedi/urlshortener/internal/app/urlshortener/model"
 	"github.com/saraghaedi/urlshortener/pkg/database"
 	"github.com/saraghaedi/urlshortener/pkg/redis"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
-	"testing"
 )
 
 type RedisURLRepoSuite struct {
@@ -70,7 +71,6 @@ func (suite *RedisURLRepoSuite) TestCreateAndFind() {
 	suite.NoError(err)
 	suite.NotNil(findByIDUrl)
 	suite.Equal(url.URL, findByIDUrl.URL)
-
 }
 
 func (suite *RedisURLRepoSuite) TestUpdateCounter() {

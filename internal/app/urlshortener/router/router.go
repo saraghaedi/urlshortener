@@ -45,7 +45,7 @@ func New(cfg config.Config, masterDb, slaveDb *gorm.DB, masterRedis, slaveRedis 
 	redisURLRepo := model.RedisURLRepo{
 		Base: model.SQLURLRepo{
 			MasterDB: masterDb,
-			SlaveDB: slaveDb,
+			SlaveDB:  slaveDb,
 		},
 		RedisMasterClient: masterRedis,
 		RedisSlaveClient:  slaveRedis,
